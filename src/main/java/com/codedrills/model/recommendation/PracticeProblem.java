@@ -2,7 +2,7 @@ package com.codedrills.model.recommendation;
 
 import com.codedrills.model.Problem;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity(name = "practice_problems")
 public class PracticeProblem {

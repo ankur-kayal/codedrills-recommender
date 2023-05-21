@@ -3,10 +3,8 @@ package com.codedrills.model.recommendation;
 import com.codedrills.model.Problem;
 import com.codedrills.util.Helper;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +17,8 @@ public class Recommendation {
   private String description;
   @OneToMany(cascade = CascadeType.ALL)
   private List<PracticeProblem> practiceProblems;
+
+  @Column(name = "`rank`")
   private int rank;
 
   public Recommendation() {

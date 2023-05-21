@@ -5,8 +5,8 @@ import biweekly.ICalendar;
 import biweekly.component.VEvent;
 import com.codedrills.model.Contest;
 import com.google.common.base.Charsets;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class CalendarService {
-  private static Logger logger = Logger.getLogger(CalendarService.class);
   private static String CALENDAR_URL = "https://calendar.google.com/calendar/ical/codedrills%40gmail.com/public/basic.ics";
   List<Contest> contests;
 
@@ -28,7 +28,7 @@ public class CalendarService {
 
   @Scheduled(fixedDelay = 30 * 60 * 1000, initialDelay = 60 * 1000)
   public void fetchContests() {
-    logger.info("Fetching calendar");
+    log.info("Fetching calendar");
     ICalendar ical = Biweekly.parse(executeGET(CALENDAR_URL)).first();
     List<VEvent> events = ical.getEvents();
     contests = events.stream()
@@ -45,7 +45,7 @@ public class CalendarService {
 
       return IOUtils.toString(connection.getInputStream(), Charsets.UTF_8);
     } catch(Exception ex) {
-      logger.error("Error when fetching calendar", ex);
+      log.error("Error when fetching calendar", ex);
       return null;
     } finally {
       if(connection != null) {

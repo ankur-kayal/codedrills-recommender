@@ -4,7 +4,7 @@ import com.codedrills.model.Handle;
 import com.codedrills.model.Problem;
 import com.codedrills.model.Site;
 import com.codedrills.model.stats.UserStats;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class SiteService {
-  private static Logger logger = Logger.getLogger(SiteService.class);
-
   private final List<SiteInterface> siteInterfaces;
   private final Map<Site, SiteInterface> interfaceMap;
 
@@ -29,7 +28,7 @@ public class SiteService {
   }
 
   public List<Problem> fetchProblemData() {
-    logger.info("Fetching problem data");
+    log.info("Fetching problem data");
     return siteInterfaces
       .stream()
       .map(SiteInterface::fetchProblems)

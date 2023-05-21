@@ -2,7 +2,7 @@ package com.codedrills.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class DataFetcher {
-  private static Logger logger = Logger.getLogger(DataFetcher.class);
   private final RestTemplate restTemplate;
   private final static Map<CacheDuration, Cache<String, Object>> cacheMap = new HashMap<>();
 
@@ -53,7 +53,7 @@ public class DataFetcher {
         })
         .orElseGet(() -> fetchStringFor(url));
     } catch(Exception ex) {
-      logger.error(String.format("Error while fetching %s", url), ex);
+      log.error(String.format("Error while fetching %s", url), ex);
       throw new RuntimeException(ex.getMessage());
     }
   }
@@ -71,7 +71,7 @@ public class DataFetcher {
         })
         .orElseGet(() -> fetchDocFor(url));
     } catch(Exception ex) {
-      logger.error(String.format("Error while fetching %s", url), ex);
+      log.error(String.format("Error while fetching %s", url), ex);
       throw new RuntimeException(ex.getMessage());
     }
   }

@@ -7,7 +7,7 @@ import com.codedrills.model.analysis.Rating;
 import com.codedrills.model.stats.UserStats;
 import com.codedrills.util.Helper;
 import com.codedrills.util.TagHelper;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -22,8 +22,8 @@ import static com.codedrills.service.DataFetcher.CacheDuration.SHORT;
 import static java.util.Collections.singletonList;
 
 @Service
+@Slf4j
 public class Spoj extends AbstractTagProblemFetcher {
-  private static Logger logger = Logger.getLogger(Codechef.class);
   private static String FETCH_PROBLEM_URL = "https://www.spoj.com/problems/tag/%s";
   private static String PROBLEM_URL = "https://www.spoj.com/problems/%s";
   private static String USER_URL = "https://www.spoj.com/users/%s";
@@ -31,7 +31,7 @@ public class Spoj extends AbstractTagProblemFetcher {
   @Override
   public UserStats fetchUserStats(Handle handle) {
     String user = handle.getHandle();
-    logger.info(String.format("Fetching sp stats %s ", user));
+    log.info(String.format("Fetching sp stats %s ", user));
     try {
       Document doc = dataFetcher.fetchDoc(String.format(USER_URL, user), SHORT);
       UserStats userStats = new UserStats();
@@ -39,10 +39,10 @@ public class Spoj extends AbstractTagProblemFetcher {
       parseSubmissions(userStats, doc);
       parsePoints(handle, userStats, doc);
 
-      logger.info(String.format("Fetching completed sp stats %s ", user));
+      log.info(String.format("Fetching completed sp stats %s ", user));
       return userStats;
     } catch(Exception ex) {
-      logger.warn(String.format("Error while fetching sp submissions for %s", user), ex);
+      log.warn(String.format("Error while fetching sp submissions for %s", user), ex);
       throw new RuntimeException(ex.getCause());
     }
   }
@@ -91,7 +91,7 @@ public class Spoj extends AbstractTagProblemFetcher {
   }
 
   protected List<Problem> fetchForTag(String tag) {
-    logger.info(String.format("Fetching sp problems for tag %s", tag));
+    log.info(String.format("Fetching sp problems for tag %s", tag));
 
     try {
       Document doc = dataFetcher.fetchDoc(String.format(FETCH_PROBLEM_URL, tag), NONE);
@@ -120,7 +120,7 @@ public class Spoj extends AbstractTagProblemFetcher {
 
       return problems;
     } catch(Exception ex) {
-      logger.warn(String.format("Error while fetching sp problems for %s", tag), ex);
+      log.warn(String.format("Error while fetching sp problems for %s", tag), ex);
       throw new RuntimeException(ex.getCause());
     }
   }

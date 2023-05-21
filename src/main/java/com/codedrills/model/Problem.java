@@ -2,8 +2,8 @@ package com.codedrills.model;
 
 import com.codedrills.model.recommendation.ProblemDifficulty;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 
 import static com.google.common.base.Strings.isNullOrEmpty;

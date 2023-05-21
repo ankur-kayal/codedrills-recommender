@@ -8,7 +8,7 @@ import com.codedrills.model.cc.CCProblemFetchResponse;
 import com.codedrills.model.stats.UserStats;
 import com.codedrills.util.Helper;
 import com.codedrills.util.VerdictHelper;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ import static com.codedrills.service.DataFetcher.CacheDuration.NONE;
 import static com.codedrills.service.DataFetcher.CacheDuration.SHORT;
 
 @Service
+@Slf4j
 public class Codechef extends AbstractTagProblemFetcher {
-  private static Logger logger = Logger.getLogger(Codechef.class);
   private static String FETCH_PROBLEM_URL = "https://www.codechef.com/get/tags/problems/%s";
   private static String PROBLEM_URL = "https://www.codechef.com/problems/%s";
   private static String USER_URL = "https://www.codechef.com/users/%s";
@@ -38,7 +38,7 @@ public class Codechef extends AbstractTagProblemFetcher {
   @Override
   public UserStats fetchUserStats(Handle handle) {
     String user = handle.getHandle();
-    logger.info(String.format("Fetching cc stats %s ", user));
+    log.info(String.format("Fetching cc stats %s ", user));
     try {
       Document doc = dataFetcher.fetchDoc(String.format(USER_URL, user), SHORT);
       UserStats userStats = new UserStats();
@@ -46,10 +46,10 @@ public class Codechef extends AbstractTagProblemFetcher {
       parseSubmissions(userStats, doc);
       parseRating(handle, userStats, doc);
 
-      logger.info(String.format("Fetching completed cc stats %s ", user));
+      log.info(String.format("Fetching completed cc stats %s ", user));
       return userStats;
     } catch(Exception ex) {
-      logger.warn(String.format("Error while fetching cc submissions for %s", user), ex);
+      log.warn(String.format("Error while fetching cc submissions for %s", user), ex);
       throw new RuntimeException(ex.getCause());
     }
   }
@@ -107,7 +107,7 @@ public class Codechef extends AbstractTagProblemFetcher {
 
   @Override
   protected List<Problem> fetchForTag(String tag) {
-    logger.info(String.format("Fetching cc problems for tag %s", tag));
+    log.info(String.format("Fetching cc problems for tag %s", tag));
 
     CCProblemFetchResponse response;
     response = Helper.gson.fromJson(

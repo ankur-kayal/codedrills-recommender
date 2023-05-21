@@ -6,7 +6,7 @@ import com.codedrills.model.Tag;
 import com.codedrills.model.recommendation.ProblemDifficulty;
 import com.codedrills.service.db.ProblemsDao;
 import com.codedrills.service.sites.SiteService;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -21,8 +21,8 @@ import java.util.stream.IntStream;
 
 @Service
 @Transactional
+@Slf4j
 public class ProblemsService implements ApplicationListener<ContextRefreshedEvent> {
-  private static Logger logger = Logger.getLogger(ProblemsService.class);
 
   private final static long REFETCH_DELAY = 12L * 60 * 60 * 1000;
   private static final long INITIAL_REFETCH_DELAY = 1L * 60 * 60 * 1000;
@@ -44,11 +44,11 @@ public class ProblemsService implements ApplicationListener<ContextRefreshedEven
   }
 
   public void loadProblems() {
-    logger.info("Loading problems from db");
+    log.info("Loading problems from db");
     List<Problem> problems = problemsDao.findAll();
     addProblems(problems);
     processBySite();
-    logger.info(String.format("Fetched %d problems from db", problems.size()));
+    log.info(String.format("Fetched %d problems from db", problems.size()));
     if(problems.isEmpty()) {
       refetchProblems();
     }
@@ -56,13 +56,13 @@ public class ProblemsService implements ApplicationListener<ContextRefreshedEven
 
   @Scheduled(fixedDelay = REFETCH_DELAY, initialDelay = INITIAL_REFETCH_DELAY)
   public void refetchProblems() {
-    logger.info("Refetching problems");
+    log.info("Refetching problems");
     int previousSize = problemsByUid.size();
     List<Problem> problems = siteService.fetchProblemData();
     addProblems(problems);
     saveProblems(problems);
     processBySite();
-    logger.info(String.format("Total %d(+%d) problems", problemsByUid.size(), problemsByUid.size() - previousSize));
+    log.info(String.format("Total %d(+%d) problems", problemsByUid.size(), problemsByUid.size() - previousSize));
   }
 
   private void saveProblems(List<Problem> problems) {

@@ -10,7 +10,7 @@ import com.codedrills.model.exceptions.InvalidInputException;
 import com.codedrills.model.stats.UserStats;
 import com.codedrills.service.DataFetcher;
 import com.codedrills.util.VerdictHelper;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,8 +24,8 @@ import static com.codedrills.util.Helper.gson;
 import static java.util.Optional.ofNullable;
 
 @Service
+@Slf4j
 public class Codeforces extends AbstractSiteService {
-  private static Logger logger = Logger.getLogger(Codeforces.class);
 
   public final static List<Integer> slrs = Arrays.asList(683, 470, 188, 153, 130, 100, 72, 64);
   public final static List<String> blacklistedHandles = Arrays.asList("vjudge1", "vjudge2", "vjudge3", "vjudge4", "vjudge5");
@@ -45,7 +45,7 @@ public class Codeforces extends AbstractSiteService {
 
   @Override
   public List<Problem> fetchProblems() {
-    logger.info("Fetching problems from cf");
+    log.info("Fetching problems from cf");
     CFProblemSetResponse response = gson.fromJson(
       dataFetcher.fetchJson(PROBLEM_SET_URL, NONE),
       CFProblemSetResponse.class
@@ -59,11 +59,11 @@ public class Codeforces extends AbstractSiteService {
     if(blacklistedHandles.contains(user.toLowerCase())) {
       throw new InvalidInputException(String.format("Can't process cf handle %s", user));
     }
-    logger.info(String.format("Fetching cf stats %s ", user));
+    log.info(String.format("Fetching cf stats %s ", user));
     List<CFSubmission> submissions = new ArrayList<>();
     int start = 1;
     do {
-      logger.info(String.format("Fetching cf stats %s(%d-) ", user, start));
+      log.info(String.format("Fetching cf stats %s(%d-) ", user, start));
       CFUserStatusResponse response = gson.fromJson(
         dataFetcher.fetchJson(String.format(USER_STATUS_URL, user, start, MAX_SUB_FETCH_COUNT), SHORT),
         CFUserStatusResponse.class
@@ -91,7 +91,7 @@ public class Codeforces extends AbstractSiteService {
       ofNullable(cfUser.getMaxRating()).map(Double::new).orElse(null)
     ));
 
-    logger.info(String.format("Fetching completed cf stats %s ", user));
+    log.info(String.format("Fetching completed cf stats %s ", user));
 
     return userStats;
   }

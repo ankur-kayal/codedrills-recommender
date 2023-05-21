@@ -63,11 +63,11 @@ public class RecommenderService {
     if(isNullOrEmpty(id)) {
       throw new InvalidInputException("Given recommendation id is invalid");
     }
-    if(!recommendationsDao.exists(id)) {
+    if(!recommendationsDao.existsById(id)) {
       throw new InvalidInputException("No such recommendation exists");
     }
 
-    Recommendation recommendation = recommendationsDao.findOne(id);
+    Recommendation recommendation = recommendationsDao.findById(id).get();
     AnalysisContext analysisContext = analysisService.analyzeUser(HandleHelper.splitHandles(recommendation.getHandles()));
     Set<String> solvedIds = analysisContext.getSortedSolved().stream()
       .map(Problem::getUid)

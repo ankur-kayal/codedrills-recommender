@@ -3,7 +3,7 @@ package com.codedrills.service.sites;
 import com.codedrills.model.Problem;
 import com.codedrills.util.Helper;
 import com.codedrills.util.TagHelper;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public abstract class AbstractTagProblemFetcher extends AbstractSiteService {
-  private static Logger logger = Logger.getLogger(AbstractTagProblemFetcher.class);
   @Value("${tags_limit}")
   private int tagFetchLimit;
   private List<String> pendingTags;
@@ -22,7 +22,7 @@ public abstract class AbstractTagProblemFetcher extends AbstractSiteService {
 
   @Override
   public List<Problem> fetchProblems() {
-    logger.info(String.format("Fetching problems from %s", site().getShortName()));
+    log.info(String.format("Fetching problems from %s", site().getShortName()));
     pendingTags = TagHelper.tagsOfSite(site())
       .stream()
       .limit(tagFetchLimit)
@@ -49,7 +49,7 @@ public abstract class AbstractTagProblemFetcher extends AbstractSiteService {
         try {
           return fetchForTag(t);
         } catch(Exception ex) {
-          logger.warn(String.format("Error while fetching for tag %s for site %s", t, site().getShortName()), ex);
+          log.warn(String.format("Error while fetching for tag %s for site %s", t, site().getShortName()), ex);
           errorTags.add(t);
           return new ArrayList<Problem>();
         }
@@ -57,7 +57,7 @@ public abstract class AbstractTagProblemFetcher extends AbstractSiteService {
       .flatMap(List::stream)
       .collect(Collectors.toList());
 
-    logger.info(String.format("For site %s, fetched %d tags", site().getShortName(), pendingTags.size() - errorTags.size()));
+    log.info(String.format("For site %s, fetched %d tags", site().getShortName(), pendingTags.size() - errorTags.size()));
     pendingTags = errorTags;
     return problems;
   }

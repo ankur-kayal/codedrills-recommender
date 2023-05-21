@@ -9,22 +9,21 @@ import com.codedrills.service.ProfileService;
 import com.codedrills.service.contests.ContestsService;
 import com.codedrills.service.recommenders.RecommenderService;
 import com.codedrills.util.HandleHelper;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.TimeZone;
 
 @Controller
+@Slf4j
 public class CodeDrillsController {
-  private static Logger logger = Logger.getLogger(CodeDrillsController.class);
-
   @Value("${is_prod}")
   private boolean isProd;
 
@@ -41,25 +40,25 @@ public class CodeDrillsController {
   @ResponseBody
   @GetMapping("/status")
   public String status() {
-    logger.info("Status request received");
+    log.info("Status request received");
     return "OK";
   }
 
   @GetMapping("/")
   public ModelAndView index() {
-    logger.info("index request received");
+    log.info("index request received");
     return recommenderView();
   }
 
   @GetMapping("/recommender")
   public ModelAndView recommender() {
-    logger.info("recommender request received");
+    log.info("recommender request received");
     return recommenderView();
   }
 
   @GetMapping("/tools/comparator")
   public ModelAndView comparator() {
-    logger.info("comparator request received");
+    log.info("comparator request received");
     ModelAndView modelAndView = newModelAndView();
     modelAndView.setViewName("comparator");
     modelAndView.addObject("handlesRegex", HandleHelper.HANDLES_REGEX);
@@ -68,7 +67,7 @@ public class CodeDrillsController {
 
   @GetMapping("/contests")
   public ModelAndView contests(TimeZone timeZone, @RequestParam(required = false) Integer utc) throws GeneralSecurityException, IOException {
-    logger.info(String.format("contests request received with timezone %s, utc %s", timeZone, utc));
+    log.info(String.format("contests request received with timezone %s, utc %s", timeZone, utc));
     ModelAndView modelAndView = newModelAndView();
     modelAndView.setViewName("contests");
     TimeZone useTZ;
@@ -85,7 +84,7 @@ public class CodeDrillsController {
 
   @GetMapping("/faq")
   public ModelAndView faq() {
-    logger.info("faq request received");
+    log.info("faq request received");
     ModelAndView modelAndView = newModelAndView();
     modelAndView.setViewName("faq");
     return modelAndView;
@@ -93,7 +92,7 @@ public class CodeDrillsController {
 
   @GetMapping("/about")
   public ModelAndView about() {
-    logger.info("about request received");
+    log.info("about request received");
     ModelAndView modelAndView = newModelAndView();
     modelAndView.setViewName("about");
     return modelAndView;
@@ -114,14 +113,14 @@ public class CodeDrillsController {
 
   @GetMapping("/profile")
   public ModelAndView profile(@RequestParam String handles) {
-    logger.info(String.format("Analysis request received for %s", handles));
+    log.info(String.format("Analysis request received for %s", handles));
 
     ModelAndView modelAndView = newModelAndView();
 
     AnalysisResult result = profileService.analyzeAndRecommend(handles);
 
     modelAndView.setViewName("profile");
-    logger.info(String.format("Analysis completed for %s", handles));
+    log.info(String.format("Analysis completed for %s", handles));
     modelAndView.addObject("result", result);
 
     return modelAndView;
@@ -130,14 +129,14 @@ public class CodeDrillsController {
 
   @GetMapping("/tools/compare")
   public ModelAndView compare(@RequestParam String handlesA, @RequestParam String handlesB) {
-    logger.info(String.format("Analysis request received for %s vs %s", handlesA, handlesB));
+    log.info(String.format("Analysis request received for %s vs %s", handlesA, handlesB));
 
     ModelAndView modelAndView = newModelAndView();
 
     ComparatorResult comparatorResult = comparatorService.compare(handlesA, handlesB);
 
     modelAndView.setViewName("compare");
-    logger.info(String.format("Comparision completed for %s vs %s", handlesA, handlesB));
+    log.info(String.format("Comparision completed for %s vs %s", handlesA, handlesB));
     modelAndView.addObject("result", comparatorResult);
 
     return modelAndView;
@@ -176,7 +175,7 @@ public class CodeDrillsController {
     if(ex instanceof CodedrillsException) {
       modelAndView.addObject("errorText", ex.getMessage());
     } else {
-      logger.error(String.format("Error while processing request %s", req.getRequestURI()), ex);
+      log.error(String.format("Error while processing request %s", req.getRequestURI()), ex);
     }
 
     return modelAndView;
